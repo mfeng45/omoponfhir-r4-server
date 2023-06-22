@@ -33,15 +33,16 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.UriType;
 
 import ca.uhn.fhir.interceptor.api.Hook;
-import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.util.ExtensionConstants;
-import edu.gatech.chai.omoponfhir.omopv6.r4.utilities.ExtensionUtil;
+import edu.gatech.chai.omoponfhir.omopv5.r4.utilities.ExtensionUtil;
 
 /**
  * @author mc142local
  *
  */
+@Interceptor
 public class SMARTonFHIRConformanceStatement {
 
 	// static String authorizeURI =
@@ -59,6 +60,7 @@ public class SMARTonFHIRConformanceStatement {
 	String authorizeUrlValue = "http://localhost:8080/authorize";
 	String tokenUrlValue = "http://localhost:8080/token";
 
+
 	public SMARTonFHIRConformanceStatement() {
 		String authorizeUrl = System.getenv("SMART_AUTHSERVERURL");
 		String tokenUrl = System.getenv("SMART_TOKENSERVERURL");
@@ -70,6 +72,7 @@ public class SMARTonFHIRConformanceStatement {
 		if (tokenUrl != null && !tokenUrl.isEmpty()) {
 			tokenUrlValue = tokenUrl;
 		}
+
 	}
 
 	@Hook(Pointcut.SERVER_CAPABILITY_STATEMENT_GENERATED)
@@ -79,9 +82,9 @@ public class SMARTonFHIRConformanceStatement {
 
 		cs
          .getSoftware()
-         .setName("OMOP v6 on FHIR R4")
-         .setVersion("v1.2.1")
-         .setReleaseDateElement(new DateTimeType("2021-09-21"));
+        //  .setName("OMOP v5.3.1 on FHIR R4")
+         .setVersion("v1.3.1")
+         .setReleaseDateElement(new DateTimeType("2023-02-07"));
 
 		cs.setPublisher("Georgia Tech Research Institute - HEAT");
 

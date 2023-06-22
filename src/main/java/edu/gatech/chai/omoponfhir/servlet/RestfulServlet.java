@@ -18,13 +18,13 @@ package edu.gatech.chai.omoponfhir.servlet;
 import java.util.*;
 
 import edu.gatech.chai.omoponfhir.security.OIDCInterceptor;
-import edu.gatech.chai.omoponfhir.omopv6.r4.provider.*;
-import edu.gatech.chai.omoponfhir.omopv6.r4.utilities.StaticValues;
+import edu.gatech.chai.omoponfhir.omopv5.r4.provider.*;
+import edu.gatech.chai.omoponfhir.omopv5.r4.utilities.StaticValues;
 import edu.gatech.chai.omoponfhir.r4.security.SMARTonFHIRConformanceStatement;
 
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
+import ca.uhn.fhir.model.dstu2.resource.ValueSet.CodeSystem;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.narrative.INarrativeGenerator;
 import ca.uhn.fhir.rest.api.EncodingEnum;
@@ -42,7 +42,6 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 public class RestfulServlet extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
-	private WebApplicationContext myAppCtx;
 	
 	/**
 	 * Constructor
@@ -57,7 +56,12 @@ public class RestfulServlet extends RestfulServer {
 	@Override
 	public void initialize() {
 		// Set server name
-		setServerName("OMOPonFHIR for FHIR R4 and OMOPv6");
+		String myName = System.getenv("OMOPONFHIR_NAME");
+		if (myName != null && !myName.isBlank()) {
+			setServerName(myName);
+		} else {
+			setServerName("OMOPonFHIR Restful Server");
+		}
 
 		// If we have system environment variable to hardcode the base URL, do it now.
 		String serverBaseUrl = System.getenv("SERVERBASE_URL");
@@ -89,6 +93,12 @@ public class RestfulServlet extends RestfulServer {
 
 		ConditionResourceProvider conditionResourceProvider = new ConditionResourceProvider();
 		providers.add(conditionResourceProvider);
+
+		CodeSystemResourceProvider codeSystemResourceProvider = new CodeSystemResourceProvider();
+		providers.add(codeSystemResourceProvider);
+
+		ValueSetResourceProvider valueSetResourceProvider = new ValueSetResourceProvider();
+		providers.add(valueSetResourceProvider);
 
 		EncounterResourceProvider encounterResourceProvider = new EncounterResourceProvider();
 		providers.add(encounterResourceProvider);
@@ -197,7 +207,7 @@ public class RestfulServlet extends RestfulServer {
 		 */
 		SMARTonFHIRConformanceStatement smartOnFHIRConformanceStatement = new SMARTonFHIRConformanceStatement();
 		registerInterceptor(smartOnFHIRConformanceStatement);
-
+		
 		/*
 		 * Tells the server to return pretty-printed responses by default
 		 */
